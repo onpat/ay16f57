@@ -74,6 +74,10 @@ RSF file can generate from [AVR-AY Player](https://www.avray.ru/avr-ay-player/)
 
 If you want to build from source, you need to use MPASM(not a XC8 ASM).
 
+If you don't have EEPROM writer, [use Raspberry Pi and EEProg](https://www.richud.com/wiki/Rasberry_Pi_I2C_EEPROM_Program)
+
+When flashing 16F57/59 with PICSTART Plus, you need to float CLKOUT pin. Or you can use [pickle](https://wiki.kewl.org/dokuwiki/projects:pickle)(but require 13V).
+
 ## Thanks & License
 
 [EEPROM routine by nagoyacoder](http://nagoyacoder.web.fc2.com/pic/pic_i2c.html)<br>
