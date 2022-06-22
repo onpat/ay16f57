@@ -65,8 +65,8 @@ Clock circuit:
 | Channel C | 10k~20kohm | Left |
 | Channel C | 10k~20kohm | Right |
 | Channel B | 10k~20kohm | Right |
-| GND | 820pf? | Left |
-| GND | 820pf? | Right |
+| GND | 820pf~1000pf | Left |
+| GND | 820pf~1000pf | Right |
 
 ## Note
 
