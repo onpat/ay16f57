@@ -4,17 +4,17 @@ This software can play music in AY-3-8910 using PIC16F57/59.<br>
 ## Feature
 1. **Plays RSF file from I2C EEPROM**<br>
    Plays RSF file and press button to skip the song.<br>
-   EEPROM data structureis like that:<br>
+   EEPROM data structure is:<br>
    01-07: Address High, Low of song 1 to 4<br>
    data is headderless RSF (starts with 3F FF) and append EOF(FD)
    at the end of the each song.<br>
    See "64krom".
    
 2. **Tests PSG IC while startup**<br>
-   If LED light up while startup sound, it is AY-3-8910 or clone.<br>
+   If LED light up while startup sound playing, it is AY-3-8910 or clone.<br>
    If it turns off, it is YM2149.<br>
    Also, If IOA3 is high while start up, IOB is '10101010'
-   else, '01010101'.<br>
+   or else, '01010101'.<br>
    
 3. **Tests and disables PIC**<br>
    If button was pressed while startup, LED will blink about 5 seconds
@@ -42,8 +42,9 @@ Note: SDA and SCL needs 10k pullup!
 | RB0 |  | 24FC512 SDA |
 | RB1 |  | 24FC512 SCL |
 | RB3 |  | tact switch |
-| MCLR |  | Vdd(5V) |
+| MCLR |  | Vdd |
 | CLKIN |  | 74HCU04 clock out |
+| Vdd | Vcc | +5V |
 
 Clock circuit:
 
@@ -55,7 +56,7 @@ Clock circuit:
 | 2Y | 1CK | PIC CLKIN |
 |  | 1D-1Q_ |  |
 |  | 1Q | AY-3-8910 CLOCK |
-|  | 1CLR_-1PR_ | Vcc(5V) |
+|  | 1CLR_-1PR_ | Vcc |
 
 [AY-3-8910 Audio Output](https://www.avray.ru/new_rc_filter/):
 
@@ -77,6 +78,8 @@ If you want to build from source, you need to use MPASM(not a XC8 ASM).
 If you don't have EEPROM writer, [use Raspberry Pi and EEProg](https://www.richud.com/wiki/Rasberry_Pi_I2C_EEPROM_Program)
 
 When flashing 16F57/59 with PICSTART Plus, you need to float CLKOUT pin. Or you can use [pickle](https://wiki.kewl.org/dokuwiki/projects:pickle)(but require 13V).
+
+"unnamed.mp3" is playing example.
 
 ## Thanks & License
 
