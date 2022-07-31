@@ -86,10 +86,5 @@ When flashing 16F57/59 with PICSTART Plus, you need to float CLKOUT pin. Or you 
 [EEPROM routine by nagoyacoder](http://nagoyacoder.web.fc2.com/pic/pic_i2c.html)<br>
 [YMZ294 routine by hijiri~](http://hijiri3.s65.xrea.com/sorekore/develop/pic/PIC04_YMZ.htm)
 
-64krom:<br>
-[Touhou Zero Track 1 by Gogin](https://zxart.ee/rus/avtory/g/gogin/touhou-zero-track-1/)<br>
-[без названия by Avatar](https://zxart.ee/rus/avtory/a/avatar/bez-nazvanija/)<br>
-[постровлялька by Karbofros](https://zxart.ee/eng/authors/k/karbofos/postrovljalka/)
-
 I can't find a license of these routines, but they takes for "sample source".<br>
 So I will take this software for "sample source" ...
