@@ -79,8 +79,6 @@ If you don't have EEPROM writer, [use Raspberry Pi and EEProg](https://www.richu
 
 When flashing 16F57/59 with PICSTART Plus, you need to float CLKOUT pin. Or you can use [pickle](https://wiki.kewl.org/dokuwiki/projects:pickle)(but require 13V).
 
-"unnamed.mp3" is playing example.
-
 Example PCB design and BOM list, CPL file is available.
 
 ## Thanks & License
