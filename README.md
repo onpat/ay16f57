@@ -81,6 +81,8 @@ When flashing 16F57/59 with PICSTART Plus, you need to float CLKOUT pin. Or you 
 
 "unnamed.mp3" is playing example.
 
+Example PCB design and BOM list, CPL file is available.
+
 ## Thanks & License
 
 [EEPROM routine by nagoyacoder](http://nagoyacoder.web.fc2.com/pic/pic_i2c.html)<br>
