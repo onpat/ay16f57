@@ -83,6 +83,8 @@ Example PCB design and BOM list, CPL file is available.
 
 ## Thanks & License
 
+sample ROM file contains "Touhou Zero Track 1" by Gogin.<br>
+
 [EEPROM routine by nagoyacoder](http://nagoyacoder.web.fc2.com/pic/pic_i2c.html)<br>
 [YMZ294 routine by hijiri~](http://hijiri3.s65.xrea.com/sorekore/develop/pic/PIC04_YMZ.htm)
 
