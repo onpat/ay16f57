@@ -8,7 +8,7 @@ This software can play music in AY-3-8910 using PIC16F57/59.<br>
    01-07: Address High, Low of song 1 to 4<br>
    data is headderless RSF (starts with 3F FF) and append EOF(FD)
    at the end of the each song.<br>
-   See "64krom".
+   See "16krom".
    
 2. **Tests PSG IC while startup**<br>
    If LED light up while startup sound playing, it is AY-3-8910 or clone.<br>
