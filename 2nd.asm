@@ -13,28 +13,26 @@
 
 ;Variable registers setting...
 
-T1	EQU	07h ; delay counter
-
 ; AY register variable
 adr	EQU	08h
 dat	EQU	09h
 
 ; EEPROM register
-ROM_CHIP	EQU	0Ah		;�f�o�C�X�A�h���X�̎w��Ŏg��
-ROM_ADD_H	EQU	0Bh		;�A�h���X���1�o�C�g�̎w��Ɏg��
-ROM_ADD_L	EQU	0Ch		;�A�h���X����1�o�C�g�̎w��Ɏg��
-BUFFER		EQU	0Dh		;�e���ԃr�b�g���i�[
-DATA_IN		EQU	0Eh		;EEPROM��M�f�[�^
-DATA_OUT	EQU	0Fh		;EEPROM�ɑ��M����f�[�^
-BITCOUNT	EQU	10h		;�N���b�N���̃��W�X�^�u8�v
-AY_ADDRL	EQU 11h		;AY �A�h���X�ϐ�0-7
-AY_ADDRH	EQU 12h		;AY �A�h���X�ϐ�8-15
-AY_STATUS	EQU	13h		;AY �X�e�[�^�X�ϐ�, 00000000=YM,x,x,LASTREAD,WAITCHK,ADDRH,ADDRL,WAITFE
-AY_IF		EQU 14h		;����ϐ�
-AY_COUNT	EQU 15h		;���[�v�J�E���^
-SNG_STATUS	EQU 16h		;�v���C���[���, 00000000=x,x,x,x,x,x,x,INFOLOAD
-SNG_TPOS	EQU 17h		;�Ȉʒu
-SNG_FSH		EQU	18h		;��Ȗڂ̏�ʃA�h���X
+ROM_CHIP	EQU	0Ah		;デバイスアドレスの指定で使う
+ROM_ADD_H	EQU	0Bh		;アドレス上位1バイトの指定に使う
+ROM_ADD_L	EQU	0Ch		;アドレス下位1バイトの指定に使う
+BUFFER		EQU	0Dh		;各種状態ビットを格納
+DATA_IN		EQU	0Eh		;EEPROM受信データ
+DATA_OUT	EQU	0Fh		;EEPROMに送信するデータ
+BITCOUNT	EQU	10h		;クロック数のレジスタ「8」
+AY_ADDRL	EQU 11h		;AY アドレス変数0-7
+AY_ADDRH	EQU 12h		;AY アドレス変数8-15
+AY_STATUS	EQU	13h		;AY ステータス変数, 00000000=YM,x,x,LASTREAD,WAITCHK,ADDRH,ADDRL,WAITFE
+AY_IF		EQU 14h		;分岐変数
+AY_COUNT	EQU 15h		;ループカウンタ
+SNG_STATUS	EQU 16h		;プレイヤー情報, 00000000=x,x,x,x,x,x,x,INFOLOAD
+SNG_TPOS	EQU 17h		;曲位置
+SNG_FSH		EQU	18h		;一曲目の上位アドレス
 SNG_FSL		EQU	19h
 SNG_SEH		EQU	1Ah
 SNG_SEL		EQU	1Bh
@@ -47,11 +45,11 @@ SNG_FOL		EQU	1Fh
 AY_IOA		EQU	30h
 
 ;EEPROM Definition
-SCL     EQU  1  ; SCL�[�q�Ƃ���[�q�ԍ�
-SDA     EQU  0  ; SDA�[�q�Ƃ���[�q�ԍ�, need to set 0
+SCL     EQU  1  ; SCL端子とする端子番号
+SDA     EQU  0  ; SDA端子とする端子番号, need to set 0
 DO      EQU  0
 DI      EQU  1
-ACK_BIT EQU  2  ; ACK�M���̗L��
+ACK_BIT EQU  2  ; ACK信号の有無
 
 	org 0
 	goto	START
@@ -84,12 +82,12 @@ TEST_AOFF2
 		;First, load song address ... 
 		; if addr is 0000h that song is not avail
 		MOVLW  h'0000'
-		MOVWF  ROM_CHIP    ;�f�o�C�X�A�h���X���w��
+		MOVWF  ROM_CHIP    ;デバイスアドレスを指定
 		MOVLW  h'0000'
-		MOVWF  ROM_ADD_H   ;�A�h���X���1�o�C�g���w��
+		MOVWF  ROM_ADD_H   ;アドレス上位1バイトを指定
 		MOVLW  h'0000'
-		MOVWF  ROM_ADD_L   ;�A�h���X����1�o�C�g���w��
-		GOTO   ROM_READ    ;ROM�ǂݏo�����[�`����
+		MOVWF  ROM_ADD_L   ;アドレス下位1バイトを指定
+		GOTO   ROM_READ    ;ROM読み出しルーチンへ
 ROM_READ2
 
 ;Loop start
@@ -154,10 +152,10 @@ TMRLOOP
 	RETLW	0
 
 ;eeprom ...
-; I2C EEPROM 1�o�C�g���M
+; I2C EEPROM 1バイト送信
 BYTE_OUT
   MOVLW  H'0008'
-  MOVWF  BITCOUNT    ;8���[�v
+  MOVWF  BITCOUNT    ;8ループ
 BYTE_OUT_2
   BSF    BUFFER,DO
   BTFSS  DATA_OUT,7
@@ -169,11 +167,11 @@ BYTE_OUT_2
   CALL   BIT_IN
   RETLW	0
 
-; I2C EEPROM 1�o�C�g��M
+; I2C EEPROM 1バイト受信
 BYTE_IN
   CLRF   DATA_IN
   MOVLW  H'0008'
-  MOVWF  BITCOUNT    ;8���[�v 
+  MOVWF  BITCOUNT    ;8ループ 
   BCF    STATUS,C
 BYTE_IN_2
   RLF    DATA_IN,F
@@ -189,9 +187,9 @@ BYTE_IN_2
   RETURN
 
 ROM_READ
-  CALL   SDA_IN      ;SDA�[�q����̓��[�h�ɂ���
+  CALL   SDA_IN      ;SDA端子を入力モードにする
 
-  CALL   START_CON   ;�X�^�[�g�V�[�P���X��
+  CALL   START_CON   ;スタートシーケンスへ
   CALL   ROM_TIM
 
   ;h'00A0' = 1010   000      0
@@ -206,29 +204,29 @@ ROM_READ
   ;Not a I2C address! (sure it wont fit in 2bit)
   ;https://www.zea.jp/audio/schematic/sc_file/021.htm
 
-  MOVLW  h'00A0'     ;�R���g���[���r�b�g+�������݃r�b�g
-  IORWF  ROM_CHIP,W  ;��L�Ƀf�o�C�X�A�h���X��������
-  MOVWF  DATA_OUT    ;DATA_OUT���W�X�^�Ɉړ�
-  CALL   BYTE_OUT    ;�R���g���[���V�[�P���X�i1�o�C�g�j�̑��o
+  MOVLW  h'00A0'     ;コントロールビット+書き込みビット
+  IORWF  ROM_CHIP,W  ;上記にデバイスアドレスを加える
+  MOVWF  DATA_OUT    ;DATA_OUTレジスタに移動
+  CALL   BYTE_OUT    ;コントロールシーケンス（1バイト）の送出
   CALL   ROM_TIM
 
   MOVF   ROM_ADD_H,W
-  MOVWF  DATA_OUT    ;�A�h���X��ʂ�DATA_OUT���W�X�^�Ɉړ�
-  CALL   BYTE_OUT    ;�A�h���X��ʑ��M
+  MOVWF  DATA_OUT    ;アドレス上位をDATA_OUTレジスタに移動
+  CALL   BYTE_OUT    ;アドレス上位送信
   CALL   ROM_TIM
 
   MOVF   ROM_ADD_L,W
-  MOVWF  DATA_OUT    ;�A�h���X���ʂ�DATA_OUT���W�X�^�Ɉړ�
-  CALL   BYTE_OUT    ;�A�h���X���ʑ��M
+  MOVWF  DATA_OUT    ;アドレス下位をDATA_OUTレジスタに移動
+  CALL   BYTE_OUT    ;アドレス下位送信
   CALL   ROM_TIM
 
-  CALL   START_CON   ;�X�^�[�g�V�[�P���X��
+  CALL   START_CON   ;スタートシーケンスへ
   CALL   ROM_TIM
 
-  MOVLW  h'00A1'     ;�R���g���[���r�b�g+�ǂݍ��݃r�b�g
-  IORWF  ROM_CHIP,W  ;��L�Ƀf�o�C�X�A�h���X��������
-  MOVWF  DATA_OUT    ;DATA_OUT���W�X�^�Ɉړ�
-  CALL   BYTE_OUT    ;�R���g���[���V�[�P���X�i1�o�C�g�j�̑��o
+  MOVLW  h'00A1'     ;コントロールビット+読み込みビット
+  IORWF  ROM_CHIP,W  ;上記にデバイスアドレスを加える
+  MOVWF  DATA_OUT    ;DATA_OUTレジスタに移動
+  CALL   BYTE_OUT    ;コントロールシーケンス（1バイト）の送出
   CALL   ROM_TIM
 
 
@@ -246,8 +244,8 @@ SEQ_READ
 	;Please delete header before write the rsf file!
 	BTFSC	AY_STATUS, 4 ;if lastread = 1
 	GOTO	POST_RINT
-	BSF    BUFFER,ACK_BIT ;ACK�r�b�g�𗧂ĂĘA���ǂݏo���ɂ��� READ_INT
-	CALL   BYTE_IN     ;1�o�C�g����M�i��M���ACK�𑗏o����j
+	BSF    BUFFER,ACK_BIT ;ACKビットを立てて連続読み出しにする READ_INT
+	CALL   BYTE_IN     ;1バイトを受信（受信後にACKを送出する）
 POST_RINT
 	BCF		AY_STATUS, 4 ; lastread = 0 
 
@@ -357,20 +355,20 @@ SEQADDRH
 	GOTO   SEQ_READ
 
 LAST_READ
-  BCF    BUFFER,ACK_BIT ;ACK�r�b�g�𑗏o���Ȃ��ōŏI�ǂݏo��
-  CALL   BYTE_IN     ;1�o�C�g����M�i��M���ACK�͑��o���Ȃ��j
+  BCF    BUFFER,ACK_BIT ;ACKビットを送出しないで最終読み出し
+  CALL   BYTE_IN     ;1バイトを受信（受信後にACKは送出しない）
   CALL   ROM_TIM
 
   ;add routine here
 
-  CALL   STOP_CON    ;�X�g�b�v�V�[�P���X��
+  CALL   STOP_CON    ;ストップシーケンスへ
 
   BTFSC  SNG_STATUS, 0
   GOTO   SEQSNGSEL			;Goto Song Selector
   BSF	 SNG_STATUS, 0
   GOTO   ROM_READ2          ;INIT end
 
-; I2C EEPROM �X�^�[�g�V�[�P���X
+; I2C EEPROM スタートシーケンス
 START_CON
   BSF    PORTB,SCL
   CALL   ROM_TIM
@@ -381,7 +379,7 @@ START_CON
   CALL   SDA_IN
   RETURN
 
-; I2C EEPROM �X�g�b�v�V�[�P���X
+; I2C EEPROM ストップシーケンス
 STOP_CON
   CALL   SDA_OUT
   BCF    PORTB,SDA
@@ -390,74 +388,74 @@ STOP_CON
   CALL   SDA_IN
   RETURN
 
-; I2C EEPROM 1�r�b�g���M
+; I2C EEPROM 1ビット送信
 BIT_OUT
   BCF    PORTB,SCL
   BTFSS  BUFFER,DO
   GOTO   BIT_OUT_3
 BIT_OUT_2
   BSF    PORTB,SCL
-  GOTO   $+1         ;2�T�C�N�� ROM_WAIT
-  GOTO   $+1         ;2�T�C�N��
-  GOTO   $+1         ;2�T�C�N��
-  GOTO   $+1         ;2�T�C�N��
-  GOTO   $+1         ;2�T�C�N��
-  GOTO   $+1         ;2�T�C�N��
-  ;GOTO   $+1         ;2�T�C�N��
-  ;GOTO   $+1         ;2�T�C�N��
+  GOTO   $+1         ;2サイクル ROM_WAIT
+  GOTO   $+1         ;2サイクル
+  GOTO   $+1         ;2サイクル
+  GOTO   $+1         ;2サイクル
+  GOTO   $+1         ;2サイクル
+  GOTO   $+1         ;2サイクル
+  ;GOTO   $+1         ;2サイクル
+  ;GOTO   $+1         ;2サイクル
   BCF    PORTB,SCL
   MOVLW	B'00001001' ; SDA_IN
-  TRIS	PORTB   ;SDA�[�q����͐ݒ�
+  TRIS	PORTB   ;SDA端子を入力設定
   RETURN
 BIT_OUT_3
   MOVLW	B'00001000' ; SDA_OUT
-  TRIS	PORTB   ;SDA�[�q���o�͐ݒ�
+  TRIS	PORTB   ;SDA端子を出力設定
   BSF    PORTB,0
   BCF    PORTB,SDA
   GOTO   BIT_OUT_2
 
-; I2C EEPROM 1�r�b�g��M
+; I2C EEPROM 1ビット受信
 BIT_IN
   BCF    PORTB,SCL
   MOVLW	B'00001001' ; SDA_IN
-  TRIS	PORTB   ;SDA�[�q����͐ݒ�
+  TRIS	PORTB   ;SDA端子を入力設定
   BSF    BUFFER,DI
   BSF    PORTB,SCL
-  GOTO   $+1         ;2�T�C�N�� ROM_WAIT
-  GOTO   $+1         ;2�T�C�N��
-  GOTO   $+1         ;2�T�C�N��
-  GOTO   $+1         ;2�T�C�N��
-  GOTO   $+1         ;2�T�C�N��
-  GOTO   $+1         ;2�T�C�N��
-  ;GOTO   $+1         ;2�T�C�N��
-  ;GOTO   $+1         ;2�T�C�N��
+  GOTO   $+1         ;2サイクル ROM_WAIT
+  GOTO   $+1         ;2サイクル
+  GOTO   $+1         ;2サイクル
+  GOTO   $+1         ;2サイクル
+  GOTO   $+1         ;2サイクル
+  GOTO   $+1         ;2サイクル
+  ;GOTO   $+1         ;2サイクル
+  ;GOTO   $+1         ;2サイクル
   BTFSS  PORTB,SDA
   BCF    BUFFER,DI
   BCF    PORTB,SCL
   RETURN
 
-; I2C EEPROM SDA���͒[�q�ݒ�
+; I2C EEPROM SDA入力端子設定
 SDA_IN
   MOVLW	B'00001001'
-  TRIS	PORTB   ;SDA�[�q����͐ݒ�
+  TRIS	PORTB   ;SDA端子を入力設定
   RETURN
 
-; I2C EEPROM SDA�o�͒[�q�ݒ�
+; I2C EEPROM SDA出力端子設定
 SDA_OUT
   MOVLW	B'00001000'
-  TRIS	PORTB   ;SDA�[�q���o�͐ݒ�
+  TRIS	PORTB   ;SDA端子を出力設定
   BSF    PORTB,0
   RETURN
 
 ROM_TIM ;16 cycle = 1117ns * 16 = 17.8us in 3.58Mhz
-  GOTO   $+1         ;2�T�C�N��
-  GOTO   $+1         ;2�T�C�N��
-  GOTO   $+1         ;2�T�C�N��
-  GOTO   $+1         ;2�T�C�N��
-  GOTO   $+1         ;2�T�C�N��
-  GOTO   $+1         ;2�T�C�N��
-  ;GOTO   $+1         ;2�T�C�N��
-  ;GOTO   $+1         ;2�T�C�N��
+  GOTO   $+1         ;2サイクル
+  GOTO   $+1         ;2サイクル
+  GOTO   $+1         ;2サイクル
+  GOTO   $+1         ;2サイクル
+  GOTO   $+1         ;2サイクル
+  GOTO   $+1         ;2サイクル
+  ;GOTO   $+1         ;2サイクル
+  ;GOTO   $+1         ;2サイクル
 	RETLW	0
 
 INFOLOAD
@@ -470,32 +468,32 @@ INFOLOAD
 
 	MOVF	DATA_IN, 0
 	MOVWF	SNG_FSH
-	BSF    BUFFER,ACK_BIT ;ACK�r�b�g�𗧂ĂĘA���ǂݏo���ɂ��� SEQ_READ_INT
-	CALL   BYTE_IN     ;1�o�C�g����M�i��M���ACK�𑗏o����j
+	BSF    BUFFER,ACK_BIT ;ACKビットを立てて連続読み出しにする SEQ_READ_INT
+	CALL   BYTE_IN     ;1バイトを受信（受信後にACKを送出する）
 	MOVF	DATA_IN, 0
 	MOVWF	SNG_FSL
-	BSF    BUFFER,ACK_BIT ;ACK�r�b�g�𗧂ĂĘA���ǂݏo���ɂ��� SEQ_READ_INT
-	CALL   BYTE_IN     ;1�o�C�g����M�i��M���ACK�𑗏o����j
+	BSF    BUFFER,ACK_BIT ;ACKビットを立てて連続読み出しにする SEQ_READ_INT
+	CALL   BYTE_IN     ;1バイトを受信（受信後にACKを送出する）
 	MOVF	DATA_IN, 0
 	MOVWF	SNG_SEH
-	BSF    BUFFER,ACK_BIT ;ACK�r�b�g�𗧂ĂĘA���ǂݏo���ɂ��� SEQ_READ_INT
-	CALL   BYTE_IN     ;1�o�C�g����M�i��M���ACK�𑗏o����j
+	BSF    BUFFER,ACK_BIT ;ACKビットを立てて連続読み出しにする SEQ_READ_INT
+	CALL   BYTE_IN     ;1バイトを受信（受信後にACKを送出する）
 	MOVF	DATA_IN, 0
 	MOVWF	SNG_SEL
-	BSF    BUFFER,ACK_BIT ;ACK�r�b�g�𗧂ĂĘA���ǂݏo���ɂ��� SEQ_READ_INT
-	CALL   BYTE_IN     ;1�o�C�g����M�i��M���ACK�𑗏o����j
+	BSF    BUFFER,ACK_BIT ;ACKビットを立てて連続読み出しにする SEQ_READ_INT
+	CALL   BYTE_IN     ;1バイトを受信（受信後にACKを送出する）
 	MOVF	DATA_IN, 0
 	MOVWF	SNG_THH
-	BSF    BUFFER,ACK_BIT ;ACK�r�b�g�𗧂ĂĘA���ǂݏo���ɂ��� SEQ_READ_INT
-	CALL   BYTE_IN     ;1�o�C�g����M�i��M���ACK�𑗏o����j
+	BSF    BUFFER,ACK_BIT ;ACKビットを立てて連続読み出しにする SEQ_READ_INT
+	CALL   BYTE_IN     ;1バイトを受信（受信後にACKを送出する）
 	MOVF	DATA_IN, 0
 	MOVWF	SNG_THL
-	BSF    BUFFER,ACK_BIT ;ACK�r�b�g�𗧂ĂĘA���ǂݏo���ɂ��� SEQ_READ_INT
-	CALL   BYTE_IN     ;1�o�C�g����M�i��M���ACK�𑗏o����j
+	BSF    BUFFER,ACK_BIT ;ACKビットを立てて連続読み出しにする SEQ_READ_INT
+	CALL   BYTE_IN     ;1バイトを受信（受信後にACKを送出する）
 	MOVF	DATA_IN, 0
 	MOVWF	SNG_FOH
-	BSF    BUFFER,ACK_BIT ;ACK�r�b�g�𗧂ĂĘA���ǂݏo���ɂ��� SEQ_READ_INT
-	CALL   BYTE_IN     ;1�o�C�g����M�i��M���ACK�𑗏o����j
+	BSF    BUFFER,ACK_BIT ;ACKビットを立てて連続読み出しにする SEQ_READ_INT
+	CALL   BYTE_IN     ;1バイトを受信（受信後にACKを送出する）
 	MOVF	DATA_IN, 0
 	MOVWF	SNG_FOL
 	GOTO	LAST_READ
@@ -550,8 +548,8 @@ SEQL
 SETIO2
 
 	CALL	WREG
-	BSF    BUFFER,ACK_BIT ;ACK�r�b�g�𗧂ĂĘA���ǂݏo���ɂ��� SEQ_READ_INT
-  	CALL   BYTE_IN     ;1�o�C�g����M�i��M���ACK�𑗏o����j	; write reg
+	BSF    BUFFER,ACK_BIT ;ACKビットを立てて連続読み出しにする SEQ_READ_INT
+  	CALL   BYTE_IN     ;1バイトを受信（受信後にACKを送出する）	; write reg
 	GOTO	SEQL2
 
 SETIO
@@ -567,8 +565,8 @@ SEQH
 	MOVF	AY_COUNT, 0
 	MOVWF	adr
 	CALL	WREG
-	BSF    BUFFER,ACK_BIT ;ACK�r�b�g�𗧂ĂĘA���ǂݏo���ɂ��� SEQ_READ_INT
-  	CALL   BYTE_IN     ;1�o�C�g����M�i��M���ACK�𑗏o����j	; write reg
+	BSF    BUFFER,ACK_BIT ;ACKビットを立てて連続読み出しにする SEQ_READ_INT
+  	CALL   BYTE_IN     ;1バイトを受信（受信後にACKを送出する）	; write reg
 	GOTO	SEQH2
 
 LOOP1	
@@ -609,12 +607,12 @@ LOADFS
 		goto	NORFS
 
 		MOVLW  h'0000'
-		MOVWF  ROM_CHIP    ;�f�o�C�X�A�h���X���w��
+		MOVWF  ROM_CHIP    ;デバイスアドレスを指定
 		MOVF   SNG_FSH, 0
-		MOVWF  ROM_ADD_H   ;�A�h���X���1�o�C�g���w��
+		MOVWF  ROM_ADD_H   ;アドレス上位1バイトを指定
 		MOVF   SNG_FSL, 0
-		MOVWF  ROM_ADD_L   ;�A�h���X����1�o�C�g���w��
-		GOTO   ROM_READ    ;ROM�ǂݏo�����[�`����
+		MOVWF  ROM_ADD_L   ;アドレス下位1バイトを指定
+		GOTO   ROM_READ    ;ROM読み出しルーチンへ
 NORFS
 		INCF	SNG_TPOS, 1
 		CALL	TIME20
@@ -627,12 +625,12 @@ LOADSE
 		goto	NORSE
 
 		MOVLW  h'0000'
-		MOVWF  ROM_CHIP    ;�f�o�C�X�A�h���X���w��
+		MOVWF  ROM_CHIP    ;デバイスアドレスを指定
 		MOVF   SNG_SEH, 0
-		MOVWF  ROM_ADD_H   ;�A�h���X���1�o�C�g���w��
+		MOVWF  ROM_ADD_H   ;アドレス上位1バイトを指定
 		MOVF   SNG_SEL, 0
-		MOVWF  ROM_ADD_L   ;�A�h���X����1�o�C�g���w��
-		GOTO   ROM_READ    ;ROM�ǂݏo�����[�`����
+		MOVWF  ROM_ADD_L   ;アドレス下位1バイトを指定
+		GOTO   ROM_READ    ;ROM読み出しルーチンへ
 NORSE
 		INCF	SNG_TPOS, 1
 		CALL	TIME20
@@ -645,12 +643,12 @@ LOADTH
 		goto	NORTH
 
 		MOVLW  h'0000'
-		MOVWF  ROM_CHIP    ;�f�o�C�X�A�h���X���w��
+		MOVWF  ROM_CHIP    ;デバイスアドレスを指定
 		MOVF   SNG_THH, 0
-		MOVWF  ROM_ADD_H   ;�A�h���X���1�o�C�g���w��
+		MOVWF  ROM_ADD_H   ;アドレス上位1バイトを指定
 		MOVF   SNG_THL, 0
-		MOVWF  ROM_ADD_L   ;�A�h���X����1�o�C�g���w��
-		GOTO   ROM_READ    ;ROM�ǂݏo�����[�`����
+		MOVWF  ROM_ADD_L   ;アドレス下位1バイトを指定
+		GOTO   ROM_READ    ;ROM読み出しルーチンへ
 NORTH
 		INCF	SNG_TPOS, 1
 		CALL	TIME20
@@ -663,12 +661,12 @@ LOADFO
 		goto	NORFO
 
 		MOVLW  h'0000'
-		MOVWF  ROM_CHIP    ;�f�o�C�X�A�h���X���w��
+		MOVWF  ROM_CHIP    ;デバイスアドレスを指定
 		MOVF   SNG_FOH, 0
-		MOVWF  ROM_ADD_H   ;�A�h���X���1�o�C�g���w��
+		MOVWF  ROM_ADD_H   ;アドレス上位1バイトを指定
 		MOVF   SNG_FOL, 0
-		MOVWF  ROM_ADD_L   ;�A�h���X����1�o�C�g���w��
-		GOTO   ROM_READ    ;ROM�ǂݏo�����[�`����
+		MOVWF  ROM_ADD_L   ;アドレス下位1バイトを指定
+		GOTO   ROM_READ    ;ROM読み出しルーチンへ
 NORFO
 		CLRF	SNG_TPOS
 		CALL	TIME20
@@ -699,10 +697,10 @@ CHKAY2
 
 TIME1000
   MOVLW  D'255'
-  MOVWF  T1
+  MOVWF  adr
 TIMELOOP1
   CALL	TIME20
-  DECFSZ T1,F
+  DECFSZ adr,F
   GOTO   TIMELOOP1
   GOTO	TIME10002
 
