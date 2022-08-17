@@ -41,6 +41,7 @@ Note: SDA and SCL needs 10k pullup!
 | RA3 | BDIR |  |
 | RB0 |  | 24FC512 SDA |
 | RB1 |  | 24FC512 SCL |
+| RB3 | RESET_ |  |
 | RB3 |  | tact switch |
 | MCLR |  | Vdd |
 | CLKIN |  | 74HCU04 clock out |
