@@ -41,7 +41,7 @@ Note: SDA and SCL needs 10k pullup!
 | RA3 | BDIR |  |
 | RB0 |  | 24FC512 SDA |
 | RB1 |  | 24FC512 SCL |
-| RB3 | RESET_ |  |
+| RB2 | RESET_ |  |
 | RB3 |  | tact switch |
 | MCLR |  | Vdd |
 | CLKIN |  | 74HCU04 clock out |
@@ -51,9 +51,9 @@ Clock circuit:
 
 | 74HCU04 | 74HC74 | Others |
 | ------------- | ------------- | ------------- |
-| 1A |  | Crystal 3.58MHz 3 |
-| GND |  | Crystal 3.58MHz 2 |
-| 1Y-2A |  | Crystal 3.58MHz 1 |
+| 1A |  | Crystal 3.58MHz pin 3 |
+| GND |  | Crystal 3.58MHz pin 2 |
+| 1Y-2A |  | Crystal 3.58MHz pin 1 |
 | 2Y | 1CK | PIC CLKIN |
 |  | 1D-1Q_ |  |
 |  | 1Q | AY-3-8910 CLOCK |
@@ -84,7 +84,7 @@ Example PCB design and BOM list, CPL file is available.
 
 ## Thanks & License
 
-sample ROM file contains "Touhou Zero Track 1" by Gogin.<br>
+sample ROM file contains ["Touhou Zero Track 1" by Gogin.](https://zxart.ee/eng/authors/g/gogin/touhou-zero-track-1/qid:498176/)<br>
 
 [EEPROM routine by nagoyacoder](http://nagoyacoder.web.fc2.com/pic/pic_i2c.html)<br>
 [YMZ294 routine by hijiri~](http://hijiri3.s65.xrea.com/sorekore/develop/pic/PIC04_YMZ.htm)
