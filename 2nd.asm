@@ -3,7 +3,7 @@
 ;	5V, PIC 3.58MHz, AY-3-8910 1.79Mhz
 ;	PORTC = DA7-DA0
 ;	PORTA = BDIR,(BC2),BC1,LED
-;	PORTB = x,x,x,x,TACT,x,SCL,SDA
+;	PORTB = x,x,x,x,TACT,RST,SCL,SDA
 ;	MCLR  = VDD
 ;	SDA and SCL needs 10k pullup !!!
 
@@ -18,21 +18,21 @@ adr	EQU	08h
 dat	EQU	09h
 
 ; EEPROM register
-ROM_CHIP	EQU	0Ah		;ãƒ‡ãƒã‚¤ã‚¹ã‚¢ãƒ‰ãƒ¬ã‚¹ã®æŒ‡å®šã§ä½¿ã†
-ROM_ADD_H	EQU	0Bh		;ã‚¢ãƒ‰ãƒ¬ã‚¹ä¸Šä½1ãƒã‚¤ãƒˆã®æŒ‡å®šã«ä½¿ã†
-ROM_ADD_L	EQU	0Ch		;ã‚¢ãƒ‰ãƒ¬ã‚¹ä¸‹ä½1ãƒã‚¤ãƒˆã®æŒ‡å®šã«ä½¿ã†
-BUFFER		EQU	0Dh		;å„ç¨®çŠ¶æ…‹ãƒ“ãƒƒãƒˆã‚’æ ¼ç´
-DATA_IN		EQU	0Eh		;EEPROMå—ä¿¡ãƒ‡ãƒ¼ã‚¿
-DATA_OUT	EQU	0Fh		;EEPROMã«é€ä¿¡ã™ã‚‹ãƒ‡ãƒ¼ã‚¿
-BITCOUNT	EQU	10h		;ã‚¯ãƒ­ãƒƒã‚¯æ•°ã®ãƒ¬ã‚¸ã‚¹ã‚¿ã€Œ8ã€
-AY_ADDRL	EQU 11h		;AY ã‚¢ãƒ‰ãƒ¬ã‚¹å¤‰æ•°0-7
-AY_ADDRH	EQU 12h		;AY ã‚¢ãƒ‰ãƒ¬ã‚¹å¤‰æ•°8-15
-AY_STATUS	EQU	13h		;AY ã‚¹ãƒ†ãƒ¼ã‚¿ã‚¹å¤‰æ•°, 00000000=YM,x,x,LASTREAD,WAITCHK,ADDRH,ADDRL,WAITFE
-AY_IF		EQU 14h		;åˆ†å²å¤‰æ•°
-AY_COUNT	EQU 15h		;ãƒ«ãƒ¼ãƒ—ã‚«ã‚¦ãƒ³ã‚¿
-SNG_STATUS	EQU 16h		;ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼æƒ…å ±, 00000000=x,x,x,x,x,x,x,INFOLOAD
-SNG_TPOS	EQU 17h		;æ›²ä½ç½®
-SNG_FSH		EQU	18h		;ä¸€æ›²ç›®ã®ä¸Šä½ã‚¢ãƒ‰ãƒ¬ã‚¹
+ROM_CHIP	EQU	0Ah		;ƒfƒoƒCƒXƒAƒhƒŒƒX‚ÌŽw’è‚ÅŽg‚¤
+ROM_ADD_H	EQU	0Bh		;ƒAƒhƒŒƒXãˆÊ1ƒoƒCƒg‚ÌŽw’è‚ÉŽg‚¤
+ROM_ADD_L	EQU	0Ch		;ƒAƒhƒŒƒX‰ºˆÊ1ƒoƒCƒg‚ÌŽw’è‚ÉŽg‚¤
+BUFFER		EQU	0Dh		;ŠeŽíó‘Ôƒrƒbƒg‚ðŠi”[
+DATA_IN		EQU	0Eh		;EEPROMŽóMƒf[ƒ^
+DATA_OUT	EQU	0Fh		;EEPROM‚É‘—M‚·‚éƒf[ƒ^
+BITCOUNT	EQU	10h		;ƒNƒƒbƒN”‚ÌƒŒƒWƒXƒ^u8v
+AY_ADDRL	EQU 11h		;AY ƒAƒhƒŒƒX•Ï”0-7
+AY_ADDRH	EQU 12h		;AY ƒAƒhƒŒƒX•Ï”8-15
+AY_STATUS	EQU	13h		;AY ƒXƒe[ƒ^ƒX•Ï”, 00000000=YM,x,x,LASTREAD,WAITCHK,ADDRH,ADDRL,WAITFE
+AY_IF		EQU 14h		;•ªŠò•Ï”
+AY_COUNT	EQU 15h		;ƒ‹[ƒvƒJƒEƒ“ƒ^
+SNG_STATUS	EQU 16h		;ƒvƒŒƒCƒ„[î•ñ, 00000000=x,x,x,x,x,x,x,INFOLOAD
+SNG_TPOS	EQU 17h		;‹ÈˆÊ’u
+SNG_FSH		EQU	18h		;ˆê‹È–Ú‚ÌãˆÊƒAƒhƒŒƒX
 SNG_FSL		EQU	19h
 SNG_SEH		EQU	1Ah
 SNG_SEL		EQU	1Bh
@@ -45,11 +45,11 @@ SNG_FOL		EQU	1Fh
 AY_IOA		EQU	30h
 
 ;EEPROM Definition
-SCL     EQU  1  ; SCLç«¯å­ã¨ã™ã‚‹ç«¯å­ç•ªå·
-SDA     EQU  0  ; SDAç«¯å­ã¨ã™ã‚‹ç«¯å­ç•ªå·, need to set 0
+SCL     EQU  1  ; SCL’[Žq‚Æ‚·‚é’[Žq”Ô†
+SDA     EQU  0  ; SDA’[Žq‚Æ‚·‚é’[Žq”Ô†, need to set 0
 DO      EQU  0
 DI      EQU  1
-ACK_BIT EQU  2  ; ACKä¿¡å·ã®æœ‰ç„¡
+ACK_BIT EQU  2  ; ACKM†‚Ì—L–³
 
 	org 0
 	goto	START
@@ -60,18 +60,19 @@ ACK_BIT EQU  2  ; ACKä¿¡å·ã®æœ‰ç„¡
 	org	8
 
 START
-	GOTO	INIT ;port,regsiter init, check ym or ay
+	GOTO	INIT ;port, reset, regsiter init, check ym or ay
 INIT2
 	GOTO	MIX ;enable A and init IOA, IOB
 MIX2
 	BSF		STATUS, 5	; setting Status bit 5 enables access to 200-3FF
 						; bit 6 unused?
-	GOTO	UPINIT
-UPINIT2
+	GOTO	UPINIT		;IO test
+UPINIT2					;doesn't work on GI AY-3-8910
 	GOTO	TEST_A5E
 TEST_A5E2
 	GOTO	TEST_AON
 TEST_AON2
+	BSF		PORTA, 0
 	BTFSC	AY_STATUS, 7 ; if ym, led off
 	BCF		PORTA, 0
 	GOTO	TIME1000
@@ -82,12 +83,12 @@ TEST_AOFF2
 		;First, load song address ... 
 		; if addr is 0000h that song is not avail
 		MOVLW  h'0000'
-		MOVWF  ROM_CHIP    ;ãƒ‡ãƒã‚¤ã‚¹ã‚¢ãƒ‰ãƒ¬ã‚¹ã‚’æŒ‡å®š
+		MOVWF  ROM_CHIP    ;ƒfƒoƒCƒXƒAƒhƒŒƒX‚ðŽw’è
 		MOVLW  h'0000'
-		MOVWF  ROM_ADD_H   ;ã‚¢ãƒ‰ãƒ¬ã‚¹ä¸Šä½1ãƒã‚¤ãƒˆã‚’æŒ‡å®š
+		MOVWF  ROM_ADD_H   ;ƒAƒhƒŒƒXãˆÊ1ƒoƒCƒg‚ðŽw’è
 		MOVLW  h'0000'
-		MOVWF  ROM_ADD_L   ;ã‚¢ãƒ‰ãƒ¬ã‚¹ä¸‹ä½1ãƒã‚¤ãƒˆã‚’æŒ‡å®š
-		GOTO   ROM_READ    ;ROMèª­ã¿å‡ºã—ãƒ«ãƒ¼ãƒãƒ³ã¸
+		MOVWF  ROM_ADD_L   ;ƒAƒhƒŒƒX‰ºˆÊ1ƒoƒCƒg‚ðŽw’è
+		GOTO   ROM_READ    ;ROM“Ç‚Ýo‚µƒ‹[ƒ`ƒ“‚Ö
 ROM_READ2
 
 ;Loop start
@@ -107,14 +108,14 @@ WREG
 		movf		adr,W
 		movwf		PORTC; write addr
 		movlw		B'00000101'
-		movwf		PORTA 
+		movwf		PORTA
 
-		movlw		B'00001100'
+		movlw		B'00001101'
 		movwf		PORTA
 		movf		dat,W
 		movwf		PORTC; write value
 		;CALL		ROM_TIM
-		movlw		B'00000111'
+		movlw		B'00000110'
 		movwf		PORTA
 		RETLW	0
 
@@ -132,12 +133,12 @@ RREG	;Read from AY-3-8910
 		MOVLW		b'11111111'
 		TRIS		PORTC
 
-		movlw		B'00000110'
+		movlw		B'00000111'
 		movwf		PORTA; read value
 		CALL		ROM_TIM
 		movf		PORTC,W
 		movwf		dat
-		movlw		B'00000101'
+		movlw		B'00000100'
 		movwf		PORTA
 		MOVLW		b'00000000'
 		TRIS		PORTC
@@ -152,10 +153,10 @@ TMRLOOP
 	RETLW	0
 
 ;eeprom ...
-; I2C EEPROM 1ãƒã‚¤ãƒˆé€ä¿¡
+; I2C EEPROM 1ƒoƒCƒg‘—M
 BYTE_OUT
   MOVLW  H'0008'
-  MOVWF  BITCOUNT    ;8ãƒ«ãƒ¼ãƒ—
+  MOVWF  BITCOUNT    ;8ƒ‹[ƒv
 BYTE_OUT_2
   BSF    BUFFER,DO
   BTFSS  DATA_OUT,7
@@ -167,11 +168,11 @@ BYTE_OUT_2
   CALL   BIT_IN
   RETLW	0
 
-; I2C EEPROM 1ãƒã‚¤ãƒˆå—ä¿¡
+; I2C EEPROM 1ƒoƒCƒgŽóM
 BYTE_IN
   CLRF   DATA_IN
   MOVLW  H'0008'
-  MOVWF  BITCOUNT    ;8ãƒ«ãƒ¼ãƒ— 
+  MOVWF  BITCOUNT    ;8ƒ‹[ƒv 
   BCF    STATUS,C
 BYTE_IN_2
   RLF    DATA_IN,F
@@ -187,9 +188,9 @@ BYTE_IN_2
   RETURN
 
 ROM_READ
-  CALL   SDA_IN      ;SDAç«¯å­ã‚’å…¥åŠ›ãƒ¢ãƒ¼ãƒ‰ã«ã™ã‚‹
+  CALL   SDA_IN      ;SDA’[Žq‚ð“ü—Íƒ‚[ƒh‚É‚·‚é
 
-  CALL   START_CON   ;ã‚¹ã‚¿ãƒ¼ãƒˆã‚·ãƒ¼ã‚±ãƒ³ã‚¹ã¸
+  CALL   START_CON   ;ƒXƒ^[ƒgƒV[ƒPƒ“ƒX‚Ö
   CALL   ROM_TIM
 
   ;h'00A0' = 1010   000      0
@@ -204,29 +205,29 @@ ROM_READ
   ;Not a I2C address! (sure it wont fit in 2bit)
   ;https://www.zea.jp/audio/schematic/sc_file/021.htm
 
-  MOVLW  h'00A0'     ;ã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ«ãƒ“ãƒƒãƒˆ+æ›¸ãè¾¼ã¿ãƒ“ãƒƒãƒˆ
-  IORWF  ROM_CHIP,W  ;ä¸Šè¨˜ã«ãƒ‡ãƒã‚¤ã‚¹ã‚¢ãƒ‰ãƒ¬ã‚¹ã‚’åŠ ãˆã‚‹
-  MOVWF  DATA_OUT    ;DATA_OUTãƒ¬ã‚¸ã‚¹ã‚¿ã«ç§»å‹•
-  CALL   BYTE_OUT    ;ã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ«ã‚·ãƒ¼ã‚±ãƒ³ã‚¹ï¼ˆ1ãƒã‚¤ãƒˆï¼‰ã®é€å‡º
+  MOVLW  h'00A0'     ;ƒRƒ“ƒgƒ[ƒ‹ƒrƒbƒg+‘‚«ž‚Ýƒrƒbƒg
+  IORWF  ROM_CHIP,W  ;ã‹L‚ÉƒfƒoƒCƒXƒAƒhƒŒƒX‚ð‰Á‚¦‚é
+  MOVWF  DATA_OUT    ;DATA_OUTƒŒƒWƒXƒ^‚ÉˆÚ“®
+  CALL   BYTE_OUT    ;ƒRƒ“ƒgƒ[ƒ‹ƒV[ƒPƒ“ƒXi1ƒoƒCƒgj‚Ì‘—o
   CALL   ROM_TIM
 
   MOVF   ROM_ADD_H,W
-  MOVWF  DATA_OUT    ;ã‚¢ãƒ‰ãƒ¬ã‚¹ä¸Šä½ã‚’DATA_OUTãƒ¬ã‚¸ã‚¹ã‚¿ã«ç§»å‹•
-  CALL   BYTE_OUT    ;ã‚¢ãƒ‰ãƒ¬ã‚¹ä¸Šä½é€ä¿¡
+  MOVWF  DATA_OUT    ;ƒAƒhƒŒƒXãˆÊ‚ðDATA_OUTƒŒƒWƒXƒ^‚ÉˆÚ“®
+  CALL   BYTE_OUT    ;ƒAƒhƒŒƒXãˆÊ‘—M
   CALL   ROM_TIM
 
   MOVF   ROM_ADD_L,W
-  MOVWF  DATA_OUT    ;ã‚¢ãƒ‰ãƒ¬ã‚¹ä¸‹ä½ã‚’DATA_OUTãƒ¬ã‚¸ã‚¹ã‚¿ã«ç§»å‹•
-  CALL   BYTE_OUT    ;ã‚¢ãƒ‰ãƒ¬ã‚¹ä¸‹ä½é€ä¿¡
+  MOVWF  DATA_OUT    ;ƒAƒhƒŒƒX‰ºˆÊ‚ðDATA_OUTƒŒƒWƒXƒ^‚ÉˆÚ“®
+  CALL   BYTE_OUT    ;ƒAƒhƒŒƒX‰ºˆÊ‘—M
   CALL   ROM_TIM
 
-  CALL   START_CON   ;ã‚¹ã‚¿ãƒ¼ãƒˆã‚·ãƒ¼ã‚±ãƒ³ã‚¹ã¸
+  CALL   START_CON   ;ƒXƒ^[ƒgƒV[ƒPƒ“ƒX‚Ö
   CALL   ROM_TIM
 
-  MOVLW  h'00A1'     ;ã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ«ãƒ“ãƒƒãƒˆ+èª­ã¿è¾¼ã¿ãƒ“ãƒƒãƒˆ
-  IORWF  ROM_CHIP,W  ;ä¸Šè¨˜ã«ãƒ‡ãƒã‚¤ã‚¹ã‚¢ãƒ‰ãƒ¬ã‚¹ã‚’åŠ ãˆã‚‹
-  MOVWF  DATA_OUT    ;DATA_OUTãƒ¬ã‚¸ã‚¹ã‚¿ã«ç§»å‹•
-  CALL   BYTE_OUT    ;ã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ«ã‚·ãƒ¼ã‚±ãƒ³ã‚¹ï¼ˆ1ãƒã‚¤ãƒˆï¼‰ã®é€å‡º
+  MOVLW  h'00A1'     ;ƒRƒ“ƒgƒ[ƒ‹ƒrƒbƒg+“Ç‚Ýž‚Ýƒrƒbƒg
+  IORWF  ROM_CHIP,W  ;ã‹L‚ÉƒfƒoƒCƒXƒAƒhƒŒƒX‚ð‰Á‚¦‚é
+  MOVWF  DATA_OUT    ;DATA_OUTƒŒƒWƒXƒ^‚ÉˆÚ“®
+  CALL   BYTE_OUT    ;ƒRƒ“ƒgƒ[ƒ‹ƒV[ƒPƒ“ƒXi1ƒoƒCƒgj‚Ì‘—o
   CALL   ROM_TIM
 
 
@@ -244,8 +245,8 @@ SEQ_READ
 	;Please delete header before write the rsf file!
 	BTFSC	AY_STATUS, 4 ;if lastread = 1
 	GOTO	POST_RINT
-	BSF    BUFFER,ACK_BIT ;ACKãƒ“ãƒƒãƒˆã‚’ç«‹ã¦ã¦é€£ç¶šèª­ã¿å‡ºã—ã«ã™ã‚‹ READ_INT
-	CALL   BYTE_IN     ;1ãƒã‚¤ãƒˆã‚’å—ä¿¡ï¼ˆå—ä¿¡å¾Œã«ACKã‚’é€å‡ºã™ã‚‹ï¼‰
+	BSF    BUFFER,ACK_BIT ;ACKƒrƒbƒg‚ð—§‚Ä‚Ä˜A‘±“Ç‚Ýo‚µ‚É‚·‚é READ_INT
+	CALL   BYTE_IN     ;1ƒoƒCƒg‚ðŽóMiŽóMŒã‚ÉACK‚ð‘—o‚·‚éj
 POST_RINT
 	BCF		AY_STATUS, 4 ; lastread = 0 
 
@@ -255,6 +256,10 @@ POST_RINT
 	BTFSC	PORTB, 3 ; if PORTB, 3 = High
 	GOTO	LAST_READ
 SEQTRIG2
+
+	;BSF		STATUS, 5
+	;GOTO	UPEXT		;Extended routine
+;UPEXT2	
 
 	BTFSC   AY_STATUS, 0 ;if WAITFE = 1
 	goto	SEQFEWAIT
@@ -355,20 +360,20 @@ SEQADDRH
 	GOTO   SEQ_READ
 
 LAST_READ
-  BCF    BUFFER,ACK_BIT ;ACKãƒ“ãƒƒãƒˆã‚’é€å‡ºã—ãªã„ã§æœ€çµ‚èª­ã¿å‡ºã—
-  CALL   BYTE_IN     ;1ãƒã‚¤ãƒˆã‚’å—ä¿¡ï¼ˆå—ä¿¡å¾Œã«ACKã¯é€å‡ºã—ãªã„ï¼‰
+  BCF    BUFFER,ACK_BIT ;ACKƒrƒbƒg‚ð‘—o‚µ‚È‚¢‚ÅÅI“Ç‚Ýo‚µ
+  CALL   BYTE_IN     ;1ƒoƒCƒg‚ðŽóMiŽóMŒã‚ÉACK‚Í‘—o‚µ‚È‚¢j
   CALL   ROM_TIM
 
   ;add routine here
 
-  CALL   STOP_CON    ;ã‚¹ãƒˆãƒƒãƒ—ã‚·ãƒ¼ã‚±ãƒ³ã‚¹ã¸
+  CALL   STOP_CON    ;ƒXƒgƒbƒvƒV[ƒPƒ“ƒX‚Ö
 
   BTFSC  SNG_STATUS, 0
   GOTO   SEQSNGSEL			;Goto Song Selector
   BSF	 SNG_STATUS, 0
   GOTO   ROM_READ2          ;INIT end
 
-; I2C EEPROM ã‚¹ã‚¿ãƒ¼ãƒˆã‚·ãƒ¼ã‚±ãƒ³ã‚¹
+; I2C EEPROM ƒXƒ^[ƒgƒV[ƒPƒ“ƒX
 START_CON
   BSF    PORTB,SCL
   CALL   ROM_TIM
@@ -379,7 +384,7 @@ START_CON
   CALL   SDA_IN
   RETURN
 
-; I2C EEPROM ã‚¹ãƒˆãƒƒãƒ—ã‚·ãƒ¼ã‚±ãƒ³ã‚¹
+; I2C EEPROM ƒXƒgƒbƒvƒV[ƒPƒ“ƒX
 STOP_CON
   CALL   SDA_OUT
   BCF    PORTB,SDA
@@ -388,74 +393,74 @@ STOP_CON
   CALL   SDA_IN
   RETURN
 
-; I2C EEPROM 1ãƒ“ãƒƒãƒˆé€ä¿¡
+; I2C EEPROM 1ƒrƒbƒg‘—M
 BIT_OUT
   BCF    PORTB,SCL
   BTFSS  BUFFER,DO
   GOTO   BIT_OUT_3
 BIT_OUT_2
   BSF    PORTB,SCL
-  GOTO   $+1         ;2ã‚µã‚¤ã‚¯ãƒ« ROM_WAIT
-  GOTO   $+1         ;2ã‚µã‚¤ã‚¯ãƒ«
-  GOTO   $+1         ;2ã‚µã‚¤ã‚¯ãƒ«
-  GOTO   $+1         ;2ã‚µã‚¤ã‚¯ãƒ«
-  GOTO   $+1         ;2ã‚µã‚¤ã‚¯ãƒ«
-  GOTO   $+1         ;2ã‚µã‚¤ã‚¯ãƒ«
-  ;GOTO   $+1         ;2ã‚µã‚¤ã‚¯ãƒ«
-  ;GOTO   $+1         ;2ã‚µã‚¤ã‚¯ãƒ«
+  GOTO   $+1         ;2ƒTƒCƒNƒ‹ ROM_WAIT
+  GOTO   $+1         ;2ƒTƒCƒNƒ‹
+  GOTO   $+1         ;2ƒTƒCƒNƒ‹
+  GOTO   $+1         ;2ƒTƒCƒNƒ‹
+  GOTO   $+1         ;2ƒTƒCƒNƒ‹
+  ;GOTO   $+1         ;2ƒTƒCƒNƒ‹
+  ;GOTO   $+1         ;2ƒTƒCƒNƒ‹
+  ;GOTO   $+1         ;2ƒTƒCƒNƒ‹
   BCF    PORTB,SCL
   MOVLW	B'00001001' ; SDA_IN
-  TRIS	PORTB   ;SDAç«¯å­ã‚’å…¥åŠ›è¨­å®š
+  TRIS	PORTB   ;SDA’[Žq‚ð“ü—ÍÝ’è
   RETURN
 BIT_OUT_3
   MOVLW	B'00001000' ; SDA_OUT
-  TRIS	PORTB   ;SDAç«¯å­ã‚’å‡ºåŠ›è¨­å®š
+  TRIS	PORTB   ;SDA’[Žq‚ðo—ÍÝ’è
   BSF    PORTB,0
   BCF    PORTB,SDA
   GOTO   BIT_OUT_2
 
-; I2C EEPROM 1ãƒ“ãƒƒãƒˆå—ä¿¡
+; I2C EEPROM 1ƒrƒbƒgŽóM
 BIT_IN
   BCF    PORTB,SCL
   MOVLW	B'00001001' ; SDA_IN
-  TRIS	PORTB   ;SDAç«¯å­ã‚’å…¥åŠ›è¨­å®š
+  TRIS	PORTB   ;SDA’[Žq‚ð“ü—ÍÝ’è
   BSF    BUFFER,DI
   BSF    PORTB,SCL
-  GOTO   $+1         ;2ã‚µã‚¤ã‚¯ãƒ« ROM_WAIT
-  GOTO   $+1         ;2ã‚µã‚¤ã‚¯ãƒ«
-  GOTO   $+1         ;2ã‚µã‚¤ã‚¯ãƒ«
-  GOTO   $+1         ;2ã‚µã‚¤ã‚¯ãƒ«
-  GOTO   $+1         ;2ã‚µã‚¤ã‚¯ãƒ«
-  GOTO   $+1         ;2ã‚µã‚¤ã‚¯ãƒ«
-  ;GOTO   $+1         ;2ã‚µã‚¤ã‚¯ãƒ«
-  ;GOTO   $+1         ;2ã‚µã‚¤ã‚¯ãƒ«
+  GOTO   $+1         ;2ƒTƒCƒNƒ‹ ROM_WAIT
+  GOTO   $+1         ;2ƒTƒCƒNƒ‹
+  GOTO   $+1         ;2ƒTƒCƒNƒ‹
+  GOTO   $+1         ;2ƒTƒCƒNƒ‹
+  GOTO   $+1         ;2ƒTƒCƒNƒ‹
+  ;GOTO   $+1         ;2ƒTƒCƒNƒ‹
+  ;GOTO   $+1         ;2ƒTƒCƒNƒ‹
+  ;GOTO   $+1         ;2ƒTƒCƒNƒ‹
   BTFSS  PORTB,SDA
   BCF    BUFFER,DI
   BCF    PORTB,SCL
   RETURN
 
-; I2C EEPROM SDAå…¥åŠ›ç«¯å­è¨­å®š
+; I2C EEPROM SDA“ü—Í’[ŽqÝ’è
 SDA_IN
   MOVLW	B'00001001'
-  TRIS	PORTB   ;SDAç«¯å­ã‚’å…¥åŠ›è¨­å®š
+  TRIS	PORTB   ;SDA’[Žq‚ð“ü—ÍÝ’è
   RETURN
 
-; I2C EEPROM SDAå‡ºåŠ›ç«¯å­è¨­å®š
+; I2C EEPROM SDAo—Í’[ŽqÝ’è
 SDA_OUT
   MOVLW	B'00001000'
-  TRIS	PORTB   ;SDAç«¯å­ã‚’å‡ºåŠ›è¨­å®š
+  TRIS	PORTB   ;SDA’[Žq‚ðo—ÍÝ’è
   BSF    PORTB,0
   RETURN
 
 ROM_TIM ;16 cycle = 1117ns * 16 = 17.8us in 3.58Mhz
-  GOTO   $+1         ;2ã‚µã‚¤ã‚¯ãƒ«
-  GOTO   $+1         ;2ã‚µã‚¤ã‚¯ãƒ«
-  GOTO   $+1         ;2ã‚µã‚¤ã‚¯ãƒ«
-  GOTO   $+1         ;2ã‚µã‚¤ã‚¯ãƒ«
-  GOTO   $+1         ;2ã‚µã‚¤ã‚¯ãƒ«
-  GOTO   $+1         ;2ã‚µã‚¤ã‚¯ãƒ«
-  ;GOTO   $+1         ;2ã‚µã‚¤ã‚¯ãƒ«
-  ;GOTO   $+1         ;2ã‚µã‚¤ã‚¯ãƒ«
+  GOTO   $+1         ;2ƒTƒCƒNƒ‹
+  GOTO   $+1         ;2ƒTƒCƒNƒ‹
+  GOTO   $+1         ;2ƒTƒCƒNƒ‹
+  GOTO   $+1         ;2ƒTƒCƒNƒ‹
+  GOTO   $+1         ;2ƒTƒCƒNƒ‹
+  GOTO   $+1         ;2ƒTƒCƒNƒ‹
+  ;GOTO   $+1         ;2ƒTƒCƒNƒ‹
+  ;GOTO   $+1         ;2ƒTƒCƒNƒ‹
 	RETLW	0
 
 INFOLOAD
@@ -468,32 +473,32 @@ INFOLOAD
 
 	MOVF	DATA_IN, 0
 	MOVWF	SNG_FSH
-	BSF    BUFFER,ACK_BIT ;ACKãƒ“ãƒƒãƒˆã‚’ç«‹ã¦ã¦é€£ç¶šèª­ã¿å‡ºã—ã«ã™ã‚‹ SEQ_READ_INT
-	CALL   BYTE_IN     ;1ãƒã‚¤ãƒˆã‚’å—ä¿¡ï¼ˆå—ä¿¡å¾Œã«ACKã‚’é€å‡ºã™ã‚‹ï¼‰
+	BSF    BUFFER,ACK_BIT ;ACKƒrƒbƒg‚ð—§‚Ä‚Ä˜A‘±“Ç‚Ýo‚µ‚É‚·‚é SEQ_READ_INT
+	CALL   BYTE_IN     ;1ƒoƒCƒg‚ðŽóMiŽóMŒã‚ÉACK‚ð‘—o‚·‚éj
 	MOVF	DATA_IN, 0
 	MOVWF	SNG_FSL
-	BSF    BUFFER,ACK_BIT ;ACKãƒ“ãƒƒãƒˆã‚’ç«‹ã¦ã¦é€£ç¶šèª­ã¿å‡ºã—ã«ã™ã‚‹ SEQ_READ_INT
-	CALL   BYTE_IN     ;1ãƒã‚¤ãƒˆã‚’å—ä¿¡ï¼ˆå—ä¿¡å¾Œã«ACKã‚’é€å‡ºã™ã‚‹ï¼‰
+	BSF    BUFFER,ACK_BIT ;ACKƒrƒbƒg‚ð—§‚Ä‚Ä˜A‘±“Ç‚Ýo‚µ‚É‚·‚é SEQ_READ_INT
+	CALL   BYTE_IN     ;1ƒoƒCƒg‚ðŽóMiŽóMŒã‚ÉACK‚ð‘—o‚·‚éj
 	MOVF	DATA_IN, 0
 	MOVWF	SNG_SEH
-	BSF    BUFFER,ACK_BIT ;ACKãƒ“ãƒƒãƒˆã‚’ç«‹ã¦ã¦é€£ç¶šèª­ã¿å‡ºã—ã«ã™ã‚‹ SEQ_READ_INT
-	CALL   BYTE_IN     ;1ãƒã‚¤ãƒˆã‚’å—ä¿¡ï¼ˆå—ä¿¡å¾Œã«ACKã‚’é€å‡ºã™ã‚‹ï¼‰
+	BSF    BUFFER,ACK_BIT ;ACKƒrƒbƒg‚ð—§‚Ä‚Ä˜A‘±“Ç‚Ýo‚µ‚É‚·‚é SEQ_READ_INT
+	CALL   BYTE_IN     ;1ƒoƒCƒg‚ðŽóMiŽóMŒã‚ÉACK‚ð‘—o‚·‚éj
 	MOVF	DATA_IN, 0
 	MOVWF	SNG_SEL
-	BSF    BUFFER,ACK_BIT ;ACKãƒ“ãƒƒãƒˆã‚’ç«‹ã¦ã¦é€£ç¶šèª­ã¿å‡ºã—ã«ã™ã‚‹ SEQ_READ_INT
-	CALL   BYTE_IN     ;1ãƒã‚¤ãƒˆã‚’å—ä¿¡ï¼ˆå—ä¿¡å¾Œã«ACKã‚’é€å‡ºã™ã‚‹ï¼‰
+	BSF    BUFFER,ACK_BIT ;ACKƒrƒbƒg‚ð—§‚Ä‚Ä˜A‘±“Ç‚Ýo‚µ‚É‚·‚é SEQ_READ_INT
+	CALL   BYTE_IN     ;1ƒoƒCƒg‚ðŽóMiŽóMŒã‚ÉACK‚ð‘—o‚·‚éj
 	MOVF	DATA_IN, 0
 	MOVWF	SNG_THH
-	BSF    BUFFER,ACK_BIT ;ACKãƒ“ãƒƒãƒˆã‚’ç«‹ã¦ã¦é€£ç¶šèª­ã¿å‡ºã—ã«ã™ã‚‹ SEQ_READ_INT
-	CALL   BYTE_IN     ;1ãƒã‚¤ãƒˆã‚’å—ä¿¡ï¼ˆå—ä¿¡å¾Œã«ACKã‚’é€å‡ºã™ã‚‹ï¼‰
+	BSF    BUFFER,ACK_BIT ;ACKƒrƒbƒg‚ð—§‚Ä‚Ä˜A‘±“Ç‚Ýo‚µ‚É‚·‚é SEQ_READ_INT
+	CALL   BYTE_IN     ;1ƒoƒCƒg‚ðŽóMiŽóMŒã‚ÉACK‚ð‘—o‚·‚éj
 	MOVF	DATA_IN, 0
 	MOVWF	SNG_THL
-	BSF    BUFFER,ACK_BIT ;ACKãƒ“ãƒƒãƒˆã‚’ç«‹ã¦ã¦é€£ç¶šèª­ã¿å‡ºã—ã«ã™ã‚‹ SEQ_READ_INT
-	CALL   BYTE_IN     ;1ãƒã‚¤ãƒˆã‚’å—ä¿¡ï¼ˆå—ä¿¡å¾Œã«ACKã‚’é€å‡ºã™ã‚‹ï¼‰
+	BSF    BUFFER,ACK_BIT ;ACKƒrƒbƒg‚ð—§‚Ä‚Ä˜A‘±“Ç‚Ýo‚µ‚É‚·‚é SEQ_READ_INT
+	CALL   BYTE_IN     ;1ƒoƒCƒg‚ðŽóMiŽóMŒã‚ÉACK‚ð‘—o‚·‚éj
 	MOVF	DATA_IN, 0
 	MOVWF	SNG_FOH
-	BSF    BUFFER,ACK_BIT ;ACKãƒ“ãƒƒãƒˆã‚’ç«‹ã¦ã¦é€£ç¶šèª­ã¿å‡ºã—ã«ã™ã‚‹ SEQ_READ_INT
-	CALL   BYTE_IN     ;1ãƒã‚¤ãƒˆã‚’å—ä¿¡ï¼ˆå—ä¿¡å¾Œã«ACKã‚’é€å‡ºã™ã‚‹ï¼‰
+	BSF    BUFFER,ACK_BIT ;ACKƒrƒbƒg‚ð—§‚Ä‚Ä˜A‘±“Ç‚Ýo‚µ‚É‚·‚é SEQ_READ_INT
+	CALL   BYTE_IN     ;1ƒoƒCƒg‚ðŽóMiŽóMŒã‚ÉACK‚ð‘—o‚·‚éj
 	MOVF	DATA_IN, 0
 	MOVWF	SNG_FOL
 	GOTO	LAST_READ
@@ -548,8 +553,8 @@ SEQL
 SETIO2
 
 	CALL	WREG
-	BSF    BUFFER,ACK_BIT ;ACKãƒ“ãƒƒãƒˆã‚’ç«‹ã¦ã¦é€£ç¶šèª­ã¿å‡ºã—ã«ã™ã‚‹ SEQ_READ_INT
-  	CALL   BYTE_IN     ;1ãƒã‚¤ãƒˆã‚’å—ä¿¡ï¼ˆå—ä¿¡å¾Œã«ACKã‚’é€å‡ºã™ã‚‹ï¼‰	; write reg
+	BSF    BUFFER,ACK_BIT ;ACKƒrƒbƒg‚ð—§‚Ä‚Ä˜A‘±“Ç‚Ýo‚µ‚É‚·‚é SEQ_READ_INT
+  	CALL   BYTE_IN     ;1ƒoƒCƒg‚ðŽóMiŽóMŒã‚ÉACK‚ð‘—o‚·‚éj	; write reg
 	GOTO	SEQL2
 
 SETIO
@@ -565,8 +570,8 @@ SEQH
 	MOVF	AY_COUNT, 0
 	MOVWF	adr
 	CALL	WREG
-	BSF    BUFFER,ACK_BIT ;ACKãƒ“ãƒƒãƒˆã‚’ç«‹ã¦ã¦é€£ç¶šèª­ã¿å‡ºã—ã«ã™ã‚‹ SEQ_READ_INT
-  	CALL   BYTE_IN     ;1ãƒã‚¤ãƒˆã‚’å—ä¿¡ï¼ˆå—ä¿¡å¾Œã«ACKã‚’é€å‡ºã™ã‚‹ï¼‰	; write reg
+	BSF    BUFFER,ACK_BIT ;ACKƒrƒbƒg‚ð—§‚Ä‚Ä˜A‘±“Ç‚Ýo‚µ‚É‚·‚é SEQ_READ_INT
+  	CALL   BYTE_IN     ;1ƒoƒCƒg‚ðŽóMiŽóMŒã‚ÉACK‚ð‘—o‚·‚éj	; write reg
 	GOTO	SEQH2
 
 LOOP1	
@@ -607,12 +612,12 @@ LOADFS
 		goto	NORFS
 
 		MOVLW  h'0000'
-		MOVWF  ROM_CHIP    ;ãƒ‡ãƒã‚¤ã‚¹ã‚¢ãƒ‰ãƒ¬ã‚¹ã‚’æŒ‡å®š
+		MOVWF  ROM_CHIP    ;ƒfƒoƒCƒXƒAƒhƒŒƒX‚ðŽw’è
 		MOVF   SNG_FSH, 0
-		MOVWF  ROM_ADD_H   ;ã‚¢ãƒ‰ãƒ¬ã‚¹ä¸Šä½1ãƒã‚¤ãƒˆã‚’æŒ‡å®š
+		MOVWF  ROM_ADD_H   ;ƒAƒhƒŒƒXãˆÊ1ƒoƒCƒg‚ðŽw’è
 		MOVF   SNG_FSL, 0
-		MOVWF  ROM_ADD_L   ;ã‚¢ãƒ‰ãƒ¬ã‚¹ä¸‹ä½1ãƒã‚¤ãƒˆã‚’æŒ‡å®š
-		GOTO   ROM_READ    ;ROMèª­ã¿å‡ºã—ãƒ«ãƒ¼ãƒãƒ³ã¸
+		MOVWF  ROM_ADD_L   ;ƒAƒhƒŒƒX‰ºˆÊ1ƒoƒCƒg‚ðŽw’è
+		GOTO   ROM_READ    ;ROM“Ç‚Ýo‚µƒ‹[ƒ`ƒ“‚Ö
 NORFS
 		INCF	SNG_TPOS, 1
 		CALL	TIME20
@@ -625,12 +630,12 @@ LOADSE
 		goto	NORSE
 
 		MOVLW  h'0000'
-		MOVWF  ROM_CHIP    ;ãƒ‡ãƒã‚¤ã‚¹ã‚¢ãƒ‰ãƒ¬ã‚¹ã‚’æŒ‡å®š
+		MOVWF  ROM_CHIP    ;ƒfƒoƒCƒXƒAƒhƒŒƒX‚ðŽw’è
 		MOVF   SNG_SEH, 0
-		MOVWF  ROM_ADD_H   ;ã‚¢ãƒ‰ãƒ¬ã‚¹ä¸Šä½1ãƒã‚¤ãƒˆã‚’æŒ‡å®š
+		MOVWF  ROM_ADD_H   ;ƒAƒhƒŒƒXãˆÊ1ƒoƒCƒg‚ðŽw’è
 		MOVF   SNG_SEL, 0
-		MOVWF  ROM_ADD_L   ;ã‚¢ãƒ‰ãƒ¬ã‚¹ä¸‹ä½1ãƒã‚¤ãƒˆã‚’æŒ‡å®š
-		GOTO   ROM_READ    ;ROMèª­ã¿å‡ºã—ãƒ«ãƒ¼ãƒãƒ³ã¸
+		MOVWF  ROM_ADD_L   ;ƒAƒhƒŒƒX‰ºˆÊ1ƒoƒCƒg‚ðŽw’è
+		GOTO   ROM_READ    ;ROM“Ç‚Ýo‚µƒ‹[ƒ`ƒ“‚Ö
 NORSE
 		INCF	SNG_TPOS, 1
 		CALL	TIME20
@@ -643,12 +648,12 @@ LOADTH
 		goto	NORTH
 
 		MOVLW  h'0000'
-		MOVWF  ROM_CHIP    ;ãƒ‡ãƒã‚¤ã‚¹ã‚¢ãƒ‰ãƒ¬ã‚¹ã‚’æŒ‡å®š
+		MOVWF  ROM_CHIP    ;ƒfƒoƒCƒXƒAƒhƒŒƒX‚ðŽw’è
 		MOVF   SNG_THH, 0
-		MOVWF  ROM_ADD_H   ;ã‚¢ãƒ‰ãƒ¬ã‚¹ä¸Šä½1ãƒã‚¤ãƒˆã‚’æŒ‡å®š
+		MOVWF  ROM_ADD_H   ;ƒAƒhƒŒƒXãˆÊ1ƒoƒCƒg‚ðŽw’è
 		MOVF   SNG_THL, 0
-		MOVWF  ROM_ADD_L   ;ã‚¢ãƒ‰ãƒ¬ã‚¹ä¸‹ä½1ãƒã‚¤ãƒˆã‚’æŒ‡å®š
-		GOTO   ROM_READ    ;ROMèª­ã¿å‡ºã—ãƒ«ãƒ¼ãƒãƒ³ã¸
+		MOVWF  ROM_ADD_L   ;ƒAƒhƒŒƒX‰ºˆÊ1ƒoƒCƒg‚ðŽw’è
+		GOTO   ROM_READ    ;ROM“Ç‚Ýo‚µƒ‹[ƒ`ƒ“‚Ö
 NORTH
 		INCF	SNG_TPOS, 1
 		CALL	TIME20
@@ -661,12 +666,12 @@ LOADFO
 		goto	NORFO
 
 		MOVLW  h'0000'
-		MOVWF  ROM_CHIP    ;ãƒ‡ãƒã‚¤ã‚¹ã‚¢ãƒ‰ãƒ¬ã‚¹ã‚’æŒ‡å®š
+		MOVWF  ROM_CHIP    ;ƒfƒoƒCƒXƒAƒhƒŒƒX‚ðŽw’è
 		MOVF   SNG_FOH, 0
-		MOVWF  ROM_ADD_H   ;ã‚¢ãƒ‰ãƒ¬ã‚¹ä¸Šä½1ãƒã‚¤ãƒˆã‚’æŒ‡å®š
+		MOVWF  ROM_ADD_H   ;ƒAƒhƒŒƒXãˆÊ1ƒoƒCƒg‚ðŽw’è
 		MOVF   SNG_FOL, 0
-		MOVWF  ROM_ADD_L   ;ã‚¢ãƒ‰ãƒ¬ã‚¹ä¸‹ä½1ãƒã‚¤ãƒˆã‚’æŒ‡å®š
-		GOTO   ROM_READ    ;ROMèª­ã¿å‡ºã—ãƒ«ãƒ¼ãƒãƒ³ã¸
+		MOVWF  ROM_ADD_L   ;ƒAƒhƒŒƒX‰ºˆÊ1ƒoƒCƒg‚ðŽw’è
+		GOTO   ROM_READ    ;ROM“Ç‚Ýo‚µƒ‹[ƒ`ƒ“‚Ö
 NORFO
 		CLRF	SNG_TPOS
 		CALL	TIME20
@@ -675,11 +680,13 @@ NORFO
 INIT
 	MOVLW	b'00001000'
 	TRIS	PORTB ; PORTB is EEPROM/Switch
+	BCF		PORTB, 2 ; reset enable
 	MOVLW	0x00
 	TRIS	PORTA ; PORTA is LED/ctrl
 	MOVLW	B'00010111'	; TMR0 prescaler set to 64(19ms)
 	OPTION
 	CLRF	AY_COUNT
+	BSF		PORTB, 2 ; reset disable
 	BTFSC	PORTB, 3 ;if PORTB, 3 = High
 	GOTO	DISPC
 	MOVLW	0x00
@@ -690,13 +697,12 @@ INIT
 	CLRF	AY_STATUS
 	CLRF	SNG_STATUS
 	CLRF	SNG_TPOS
-	CLRF	PORTB
 	GOTO	CHKAY
 CHKAY2
 	GOTO	INIT2
 
 TIME1000
-  MOVLW  D'255'
+  MOVLW  D'63'
   MOVWF  adr
 TIMELOOP1
   CALL	TIME20
@@ -821,8 +827,7 @@ CHKAY
 
 UPWREG
 		; Addr -> Inactive ->
-		; Write -> Read(?)
-		; or wait and Inactive (may be inaccurate)
+		; Write -> Inactive
 		;                 d21l
 		movlw		B'00001111'
 		movwf		PORTA
@@ -835,9 +840,10 @@ UPWREG
 		movwf		PORTA
 		movf		dat,W
 		movwf		PORTC; write value
-		;CALL		ROM_TIM
-		movlw		B'00000111'
+		movlw		B'00000101'
 		movwf		PORTA
+		NOP
+		NOP
 		RETLW	0
 
 UPRREG	;Read from AY-3-8910
@@ -888,6 +894,23 @@ UPINIT
 	call	UPWREG
 	BCF		STATUS, 5
 	GOTO	UPINIT2
+
+;UPEXT
+	;Main loop extended
+;	BSF		FSR, 5 ; bank 1
+
+;	BCF		FSR, 5 ; bank 0
+
+;	BCF		STATUS, 5
+;	GOTO	UPEXT2
+
+;UPTIME20
+;	MOVLW	3Ah
+;	MOVWF	01h
+;UPTMRLOOP
+;	BTFSS	01h,7
+;	GOTO	UPTMRLOOP
+;	RETLW	0
 
 	END
 
