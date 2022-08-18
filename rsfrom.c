@@ -48,7 +48,7 @@ int main(int argc, char *argv[]) {
 			i++;
     	}
 		fclose(fp);
-		outb[i] = 0xfe; // end flag 
+		outb[i] = 0xfd; // end flag 
 		i = i + 1;
 		if (j == 0) { // uncompleted ...
 			size[0] = 0x64;
